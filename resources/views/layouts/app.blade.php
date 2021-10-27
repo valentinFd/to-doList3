@@ -16,6 +16,7 @@
                 <div class="col">
                     <h1 class="display-6">@yield('heading')</h1>
                 </div>
+                @yield('welcome')
             </div>
             @yield('content')
         </div>
