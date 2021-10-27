@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
 
-class SessionsController extends Controller
+class SessionController extends Controller
 {
     public function create()
     {
