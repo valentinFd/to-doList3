@@ -1,14 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <title>Tasks</title>
-    </head>
-    <body>
-        <ul>
-            @foreach($tasks as $task)
-                <li>{{ $task->description }}</li>
-            @endforeach
-        </ul>
-    </body>
-</html>
+@extends('layout')
+
+@section('title', 'Tasks')
+
+@section('heading', 'Tasks')
+
+@section('content')
+    <ul class="list-group">
+        @foreach($tasks as $task)
+            <li class="list-group-item w-50">{{ $task->description }}</li>
+        @endforeach
+    </ul>
+@endsection
