@@ -13,4 +13,14 @@ class Task extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var string[]
+     */
+    protected $fillable = [
+        'description',
+        'user_id'
+    ];
 }

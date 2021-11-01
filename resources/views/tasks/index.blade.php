@@ -16,12 +16,23 @@
     </div>
 @endsection
 
-@if($tasks->count())
 @section('content')
-    <ul class="list-group">
-        @foreach($tasks as $task)
-            <li class="list-group-item w-50">{{ $task->description }}</li>
-        @endforeach
-    </ul>
+    <table class="table table-striped table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th scope="col" class="col-md-4">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($tasks as $task)
+            <tr>
+                <td class="col-md-4"><a class="link-dark"
+                                        href="/tasks/{{ $task->id }}">{{ $task->description }}</a></td>
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
+    <div class="mb-3">
+        <a href="/tasks/create" class="btn btn-primary" role="button">Create</a>
+    </div>
 @endsection
-@endif
