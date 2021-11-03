@@ -56,4 +56,12 @@ class TaskController extends Controller
         $task->delete();
         return redirect('/tasks');
     }
+
+    public function updateStatus(Request $request, Task $task)
+    {
+        if ((auth()->user()->id != $task->user->id)) return abort(404);
+        $task->completed = $task->completed == 0 ? 1 : 0;
+        $task->save();
+        return redirect('/tasks');
+    }
 }

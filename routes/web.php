@@ -15,3 +15,5 @@ Route::get('/register', [RegisterController::class, 'create'])->middleware('gues
 Route::post('/register', [RegisterController::class, 'store'])->middleware('guest');
 
 Route::resource('tasks', TaskController::class)->middleware('auth');
+
+Route::patch('/tasks/{task}/update-status', [TaskController::class, 'updateStatus'])->middleware('auth');

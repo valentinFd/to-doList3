@@ -124,4 +124,27 @@ class TaskControllerTest extends TestCase
         $response = $this->delete('/tasks/' . $task->id, ['description' => 'test2']);
         $response->assertStatus(302);
     }
+
+    public function test_user_can_update_only_their_tasks_status()
+    {
+        $user = User::factory()->create();
+        $user2 = User::factory()->create();
+
+        $task = Task::create([
+            'description' => 'test',
+            'user_id' => $user->id
+        ]);
+        $task2 = Task::create([
+            'description' => 'test',
+            'user_id' => $user2->id
+        ]);
+
+        $this->actingAs($user);
+
+        $response = $this->patch('/tasks/' . $task2->id . 'update-status');
+        $response->assertStatus(404);
+
+        $response = $this->patch('/tasks/' . $task->id . 'update-status');
+        $response->assertStatus(302);
+    }
 }

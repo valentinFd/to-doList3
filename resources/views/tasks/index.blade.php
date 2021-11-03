@@ -21,14 +21,32 @@
         <thead class="table-dark">
             <tr>
                 <th scope="col" class="col-md-4">Description</th>
+                <th scope="col" class="col-md-4">Completed</th>
             </tr>
         </thead>
         <tbody>
             @foreach($tasks as $task)
-            <tr>
-                <td class="col-md-4"><a class="link-dark"
-                                        href="/tasks/{{ $task->id }}">{{ $task->description }}</a></td>
-            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <a
+                            class="link-dark"
+                            style="text-decoration: {{ $task->completed == 1 ? 'line-through' : 'none' }}"
+                            href="/tasks/{{ $task->id }}"
+                            onmouseover="this.style.textDecoration = 'underline'"
+                            onmouseout="this.style.textDecoration = '{{ $task->completed == 1 ? 'line-through' : 'none' }}'"
+                        >
+                            {{ $task->description }}
+                        </a>
+                    </td>
+                    <td>
+                        <form method="post" action="/tasks/{{ $task->id }}/update-status">
+                            @csrf
+                            @method('patch')
+                            <input type="checkbox"
+                                   onchange="this.form.submit()" {{ $task->completed != 1 ?: 'checked' }}>
+                        </form>
+                    </td>
+                </tr>
             @endforeach
         </tbody>
     </table>
