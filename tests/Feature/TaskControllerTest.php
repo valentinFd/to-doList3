@@ -31,23 +31,18 @@ class TaskControllerTest extends TestCase
         $this->actingAs(User::factory()->create());
         $response = $this->post('/tasks', ['description' => 'test']);
         $response->assertStatus(302);
+        $this->assertDatabaseHas('tasks', [
+            'description' => 'test',
+            'user_id' => auth()->id()
+        ]);
     }
 
     public function test_user_can_view_details_only_about_their_tasks()
     {
-        $user = User::factory()->create();
-        $user2 = User::factory()->create();
+        $task = Task::factory()->create();
+        $task2 = Task::factory()->create();
 
-        $task = Task::create([
-            'description' => 'test',
-            'user_id' => $user->id
-        ]);
-        $task2 = Task::create([
-            'description' => 'test',
-            'user_id' => $user2->id
-        ]);
-
-        $this->actingAs($user);
+        $this->actingAs($task->user);
 
         $response = $this->get('/tasks/' . $task2->id);
         $response->assertStatus(404);
@@ -58,19 +53,10 @@ class TaskControllerTest extends TestCase
 
     public function test_user_can_view_edit_form_of_only_their_tasks()
     {
-        $user = User::factory()->create();
-        $user2 = User::factory()->create();
+        $task = Task::factory()->create();
+        $task2 = Task::factory()->create();
 
-        $task = Task::create([
-            'description' => 'test',
-            'user_id' => $user->id
-        ]);
-        $task2 = Task::create([
-            'description' => 'test',
-            'user_id' => $user2->id
-        ]);
-
-        $this->actingAs($user);
+        $this->actingAs($task->user);
 
         $response = $this->get('/tasks/' . $task2->id . 'edit');
         $response->assertStatus(404);
@@ -81,65 +67,48 @@ class TaskControllerTest extends TestCase
 
     public function test_user_can_edit_only_their_tasks()
     {
-        $user = User::factory()->create();
-        $user2 = User::factory()->create();
+        $task = Task::factory()->create();
+        $task2 = Task::factory()->create();
 
-        $task = Task::create([
-            'description' => 'test',
-            'user_id' => $user->id
-        ]);
-        $task2 = Task::create([
-            'description' => 'test',
-            'user_id' => $user2->id
-        ]);
-
-        $this->actingAs($user);
+        $this->actingAs($task->user);
 
         $response = $this->patch('/tasks/' . $task2->id, ['description' => 'test2']);
         $response->assertStatus(404);
 
         $response = $this->patch('/tasks/' . $task->id, ['description' => 'test2']);
         $response->assertStatus(302);
+
+        $this->assertDatabaseHas('tasks', [
+            'description' => 'test2',
+            'user_id' => auth()->id()
+        ]);
     }
 
     public function test_user_can_delete_only_their_tasks()
     {
-        $user = User::factory()->create();
-        $user2 = User::factory()->create();
+        $task = Task::factory()->create();
+        $task2 = Task::factory()->create();
 
-        $task = Task::create([
-            'description' => 'test',
-            'user_id' => $user->id
-        ]);
-        $task2 = Task::create([
-            'description' => 'test',
-            'user_id' => $user2->id
-        ]);
+        $this->actingAs($task->user);
 
-        $this->actingAs($user);
-
-        $response = $this->delete('/tasks/' . $task2->id, ['description' => 'test2']);
+        $response = $this->delete('/tasks/' . $task2->id);
         $response->assertStatus(404);
 
-        $response = $this->delete('/tasks/' . $task->id, ['description' => 'test2']);
+        $response = $this->delete('/tasks/' . $task->id);
         $response->assertStatus(302);
+
+        $this->assertDatabaseMissing('tasks', [
+            'description' => $task->description,
+            'user_id' => auth()->id()
+        ]);
     }
 
     public function test_user_can_update_only_their_tasks_status()
     {
-        $user = User::factory()->create();
-        $user2 = User::factory()->create();
+        $task = Task::factory()->create()->refresh();
+        $task2 = Task::factory()->create()->refresh();
 
-        $task = Task::create([
-            'description' => 'test',
-            'user_id' => $user->id
-        ]);
-        $task2 = Task::create([
-            'description' => 'test',
-            'user_id' => $user2->id
-        ]);
-
-        $this->actingAs($user);
+        $this->actingAs($task->user);
 
         $response = $this->patch('/tasks/' . $task2->id . 'update-status');
         $response->assertStatus(404);
