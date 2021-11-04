@@ -20,32 +20,34 @@
     <table class="table table-striped table-bordered">
         <thead class="table-dark">
             <tr>
+                <th scope="col" class="col-md-4"></th>
                 <th scope="col" class="col-md-4">Description</th>
-                <th scope="col" class="col-md-4">Completed</th>
+                <th scope="col" class="col-md-4">Completed At</th>
             </tr>
         </thead>
         <tbody>
             @foreach($tasks as $task)
                 <tr>
-                    <td class="col-md-4">
-                        <a
-                            class="link-dark"
-                            style="text-decoration: {{ $task->completed == 1 ? 'line-through' : 'none' }}"
-                            href="/tasks/{{ $task->id }}"
-                            onmouseover="this.style.textDecoration = 'underline'"
-                            onmouseout="this.style.textDecoration = '{{ $task->completed == 1 ? 'line-through' : 'none' }}'"
-                        >
-                            {{ $task->description }}
-                        </a>
-                    </td>
                     <td>
                         <form method="post" action="/tasks/{{ $task->id }}/update-status">
                             @csrf
                             @method('patch')
                             <input type="checkbox"
-                                   onchange="this.form.submit()" {{ $task->completed != 1 ?: 'checked' }}>
+                                   onchange="this.form.submit()" {{ $task->completed_at == null ?: 'checked' }}>
                         </form>
                     </td>
+                    <td class="col-md-4">
+                        <a
+                            class="link-dark"
+                            style="text-decoration: {{ $task->completed_at != null ? 'line-through' : 'none' }}"
+                            href="/tasks/{{ $task->id }}"
+                            onmouseover="this.style.textDecoration = 'underline'"
+                            onmouseout="this.style.textDecoration = '{{ $task->completed_at != null ? 'line-through' : 'none' }}'"
+                        >
+                            {{ $task->description }}
+                        </a>
+                    </td>
+                    <td>{{ $task->completed_at ?? 'Not Completed' }}</td>
                 </tr>
             @endforeach
         </tbody>

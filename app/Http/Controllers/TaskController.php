@@ -61,7 +61,7 @@ class TaskController extends Controller
     public function updateStatus(Task $task)
     {
         if ((auth()->id() != $task->user->id)) abort(404);
-        $task->completed = $task->completed == 0 ? 1 : 0;
+        $task->completed_at = $task->completed_at == null ? now() : null;
         $task->save();
         return redirect('/tasks');
     }
