@@ -37,83 +37,98 @@ class TaskControllerTest extends TestCase
         ]);
     }
 
-    public function test_user_can_view_details_only_about_their_tasks()
+    public function test_user_can_view_task_details()
     {
         $task = Task::factory()->create();
-        $task2 = Task::factory()->create();
-
         $this->actingAs($task->user);
-
-        $response = $this->get('/tasks/' . $task2->id);
-        $response->assertStatus(404);
-
         $response = $this->get('/tasks/' . $task->id);
         $response->assertStatus(200);
     }
 
-    public function test_user_can_view_edit_form_of_only_their_tasks()
+    public function test_user_cannot_view_details_of_a_task_they_are_not_the_owner_of()
     {
         $task = Task::factory()->create();
         $task2 = Task::factory()->create();
-
         $this->actingAs($task->user);
-
-        $response = $this->get('/tasks/' . $task2->id . 'edit');
+        $response = $this->get('/tasks/' . $task2->id);
         $response->assertStatus(404);
+    }
 
-        $response = $this->get('/tasks/' . $task->id . 'edit');
+    public function test_user_can_view_edit_form()
+    {
+        $task = Task::factory()->create();
+        $this->actingAs($task->user);
+        $response = $this->get('/tasks/' . $task->id . '/edit');
         $response->assertStatus(200);
     }
 
-    public function test_user_can_edit_only_their_tasks()
+    public function test_user_cannot_view_edit_form_of_a_task_they_are_not_the_owner_of()
     {
         $task = Task::factory()->create();
         $task2 = Task::factory()->create();
-
         $this->actingAs($task->user);
-
-        $response = $this->patch('/tasks/' . $task2->id, ['description' => 'test2']);
+        $response = $this->get('/tasks/' . $task2->id . '/edit');
         $response->assertStatus(404);
 
+    }
+
+    public function test_user_can_update_a_task()
+    {
+        $task = Task::factory()->create();
+        $this->actingAs($task->user);
         $response = $this->patch('/tasks/' . $task->id, ['description' => 'test2']);
         $response->assertStatus(302);
-
         $this->assertDatabaseHas('tasks', [
             'description' => 'test2',
-            'user_id' => auth()->id()
+            'id' => $task->id
         ]);
     }
 
-    public function test_user_can_delete_only_their_tasks()
+    public function test_user_cannot_update_a_task_they_are_not_the_owner_of()
     {
         $task = Task::factory()->create();
         $task2 = Task::factory()->create();
-
         $this->actingAs($task->user);
-
-        $response = $this->delete('/tasks/' . $task2->id);
+        $response = $this->patch('/tasks/' . $task2->id);
         $response->assertStatus(404);
+    }
 
+    public function test_user_can_delete_a_task()
+    {
+        $task = Task::factory()->create();
+        $this->actingAs($task->user);
         $response = $this->delete('/tasks/' . $task->id);
         $response->assertStatus(302);
+        $this->assertDeleted('tasks', ['id' => $task->id]);
+    }
 
+    public function test_user_cannot_delete_a_task_they_are_not_the_owner_of()
+    {
+        $task = Task::factory()->create();
+        $task2 = Task::factory()->create();
+        $this->actingAs($task->user);
+        $response = $this->delete('/tasks/' . $task2->id);
+        $response->assertStatus(404);
+    }
+
+    public function test_user_can_update_task_status()
+    {
+        $task = Task::factory()->create();
+        $this->actingAs($task->user);
+        $response = $this->patch('/tasks/' . $task->id . '/update-status');
+        $response->assertStatus(302);
         $this->assertDatabaseMissing('tasks', [
-            'description' => $task->description,
-            'user_id' => auth()->id()
+            'id' => $task->id,
+            'completed_at' => null
         ]);
     }
 
-    public function test_user_can_update_only_their_tasks_status()
+    public function test_user_cannot_update_status_of_a_task_they_are_not_the_owner_of()
     {
-        $task = Task::factory()->create()->refresh();
-        $task2 = Task::factory()->create()->refresh();
-
+        $task = Task::factory()->create();
+        $task2 = Task::factory()->create();
         $this->actingAs($task->user);
-
-        $response = $this->patch('/tasks/' . $task2->id . 'update-status');
+        $response = $this->patch('/tasks/' . $task2->id . '/update-status');
         $response->assertStatus(404);
-
-        $response = $this->patch('/tasks/' . $task->id . 'update-status');
-        $response->assertStatus(302);
     }
 }
