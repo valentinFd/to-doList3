@@ -16,7 +16,7 @@ class TaskFactory extends Factory
     {
         return [
             'description' => $this->faker->sentence(),
-            'user_id' => User::factory()->create(),
+            'user_id' => null,
             'completed_at' => null
         ];
     }

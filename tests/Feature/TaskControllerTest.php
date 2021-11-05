@@ -39,7 +39,7 @@ class TaskControllerTest extends TestCase
 
     public function test_user_can_view_task_details()
     {
-        $task = Task::factory()->create();
+        $task = Task::factory()->create(['user_id' => User::factory()]);
         $this->actingAs($task->user);
         $response = $this->get('/tasks/' . $task->id);
         $response->assertStatus(200);
@@ -47,8 +47,8 @@ class TaskControllerTest extends TestCase
 
     public function test_user_cannot_view_details_of_a_task_they_are_not_the_owner_of()
     {
-        $task = Task::factory()->create();
-        $task2 = Task::factory()->create();
+        $task = Task::factory()->create(['user_id' => User::factory()]);
+        $task2 = Task::factory()->create(['user_id' => User::factory()]);
         $this->actingAs($task->user);
         $response = $this->get('/tasks/' . $task2->id);
         $response->assertStatus(404);
@@ -56,7 +56,7 @@ class TaskControllerTest extends TestCase
 
     public function test_user_can_view_edit_form()
     {
-        $task = Task::factory()->create();
+        $task = Task::factory()->create(['user_id' => User::factory()]);
         $this->actingAs($task->user);
         $response = $this->get('/tasks/' . $task->id . '/edit');
         $response->assertStatus(200);
@@ -64,8 +64,8 @@ class TaskControllerTest extends TestCase
 
     public function test_user_cannot_view_edit_form_of_a_task_they_are_not_the_owner_of()
     {
-        $task = Task::factory()->create();
-        $task2 = Task::factory()->create();
+        $task = Task::factory()->create(['user_id' => User::factory()]);
+        $task2 = Task::factory()->create(['user_id' => User::factory()]);
         $this->actingAs($task->user);
         $response = $this->get('/tasks/' . $task2->id . '/edit');
         $response->assertStatus(404);
@@ -74,7 +74,7 @@ class TaskControllerTest extends TestCase
 
     public function test_user_can_update_a_task()
     {
-        $task = Task::factory()->create();
+        $task = Task::factory()->create(['user_id' => User::factory()]);
         $this->actingAs($task->user);
         $response = $this->patch('/tasks/' . $task->id, ['description' => 'test2']);
         $response->assertStatus(302);
@@ -86,8 +86,8 @@ class TaskControllerTest extends TestCase
 
     public function test_user_cannot_update_a_task_they_are_not_the_owner_of()
     {
-        $task = Task::factory()->create();
-        $task2 = Task::factory()->create();
+        $task = Task::factory()->create(['user_id' => User::factory()]);
+        $task2 = Task::factory()->create(['user_id' => User::factory()]);
         $this->actingAs($task->user);
         $response = $this->patch('/tasks/' . $task2->id);
         $response->assertStatus(404);
@@ -95,7 +95,7 @@ class TaskControllerTest extends TestCase
 
     public function test_user_can_soft_delete_a_task()
     {
-        $task = Task::factory()->create();
+        $task = Task::factory()->create(['user_id' => User::factory()]);
         $this->actingAs($task->user);
         $response = $this->delete('/tasks/' . $task->id);
         $response->assertStatus(302);
@@ -104,8 +104,8 @@ class TaskControllerTest extends TestCase
 
     public function test_user_cannot_delete_a_task_they_are_not_the_owner_of()
     {
-        $task = Task::factory()->create();
-        $task2 = Task::factory()->create();
+        $task = Task::factory()->create(['user_id' => User::factory()]);
+        $task2 = Task::factory()->create(['user_id' => User::factory()]);
         $this->actingAs($task->user);
         $response = $this->delete('/tasks/' . $task2->id);
         $response->assertStatus(404);
@@ -113,7 +113,7 @@ class TaskControllerTest extends TestCase
 
     public function test_user_can_update_task_status()
     {
-        $task = Task::factory()->create();
+        $task = Task::factory()->create(['user_id' => User::factory()]);
         $this->actingAs($task->user);
         $response = $this->patch('/tasks/' . $task->id . '/update-status');
         $response->assertStatus(302);
@@ -125,8 +125,8 @@ class TaskControllerTest extends TestCase
 
     public function test_user_cannot_update_status_of_a_task_they_are_not_the_owner_of()
     {
-        $task = Task::factory()->create();
-        $task2 = Task::factory()->create();
+        $task = Task::factory()->create(['user_id' => User::factory()]);
+        $task2 = Task::factory()->create(['user_id' => User::factory()]);
         $this->actingAs($task->user);
         $response = $this->patch('/tasks/' . $task2->id . '/update-status');
         $response->assertStatus(404);
@@ -134,7 +134,7 @@ class TaskControllerTest extends TestCase
 
     public function test_user_can_restore_a_soft_deleted_task()
     {
-        $task = Task::factory()->create();
+        $task = Task::factory()->create(['user_id' => User::factory()]);
         $this->actingAs($task->user);
         $this->delete('/tasks/' . $task->id);
         $this->assertSoftDeleted($task);
@@ -145,7 +145,7 @@ class TaskControllerTest extends TestCase
 
     public function test_user_can_force_delete_a_task()
     {
-        $task = Task::factory()->create();
+        $task = Task::factory()->create(['user_id' => User::factory()]);
         $this->actingAs($task->user);
         $this->delete('/tasks/' . $task->id);
         $this->assertSoftDeleted($task);
