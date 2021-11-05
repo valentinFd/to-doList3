@@ -31,6 +31,7 @@
             @endforeach
         </tbody>
     </table>
+    {{ $tasks->links() }}
     <div class="mb-3">
         <a href="/tasks" class="btn btn-primary" role="button">Back</a>
     </div>

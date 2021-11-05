@@ -9,7 +9,7 @@ class TaskController extends Controller
 {
     public function index()
     {
-        $tasks = auth()->user()->tasks;
+        $tasks = Task::where('user_id', auth()->id())->orderByDesc('completed_at')->orderByDesc('created_at')->paginate(10);
         return view('tasks.index', ['tasks' => $tasks]);
     }
 
@@ -68,7 +68,8 @@ class TaskController extends Controller
 
     public function indexTrashed()
     {
-        $tasks = auth()->user()->tasks()->onlyTrashed()->get();
+        $tasks = Task::onlyTrashed()->where('user_id', auth()->id())->orderByDesc('completed_at')
+            ->orderByDesc('created_at')->paginate(10);
         return view('tasks.index-trashed', ['tasks' => $tasks]);
     }
 
