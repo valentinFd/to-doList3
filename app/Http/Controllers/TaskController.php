@@ -65,4 +65,33 @@ class TaskController extends Controller
         $task->save();
         return redirect('/tasks');
     }
+
+    public function indexTrashed()
+    {
+        $tasks = auth()->user()->tasks()->onlyTrashed()->get();
+        return view('tasks.index-trashed', ['tasks' => $tasks]);
+    }
+
+    public function showTrashed($id)
+    {
+        $task = Task::onlyTrashed()->where('id', $id)->get()->first();
+        if ((auth()->id() != $task->user->id)) abort(404);
+        return view('tasks.show-trashed', ['task' => $task]);
+    }
+
+    public function restoreTrashed($id)
+    {
+        $task = Task::onlyTrashed()->where('id', $id)->get()->first();
+        if ((auth()->id() != $task->user->id)) abort(404);
+        $task->restore();
+        return redirect('/tasks/trashed');
+    }
+
+    public function destroyTrashed($id)
+    {
+        $task = Task::onlyTrashed()->where('id', $id)->get()->first();
+        if ((auth()->id() != $task->user->id)) abort(404);
+        $task->forceDelete();
+        return redirect('/tasks/trashed');
+    }
 }

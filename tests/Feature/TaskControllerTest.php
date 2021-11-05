@@ -93,13 +93,13 @@ class TaskControllerTest extends TestCase
         $response->assertStatus(404);
     }
 
-    public function test_user_can_delete_a_task()
+    public function test_user_can_soft_delete_a_task()
     {
         $task = Task::factory()->create();
         $this->actingAs($task->user);
         $response = $this->delete('/tasks/' . $task->id);
         $response->assertStatus(302);
-        $this->assertDeleted('tasks', ['id' => $task->id]);
+        $this->assertSoftDeleted($task);
     }
 
     public function test_user_cannot_delete_a_task_they_are_not_the_owner_of()
@@ -130,5 +130,27 @@ class TaskControllerTest extends TestCase
         $this->actingAs($task->user);
         $response = $this->patch('/tasks/' . $task2->id . '/update-status');
         $response->assertStatus(404);
+    }
+
+    public function test_user_can_restore_a_soft_deleted_task()
+    {
+        $task = Task::factory()->create();
+        $this->actingAs($task->user);
+        $this->delete('/tasks/' . $task->id);
+        $this->assertSoftDeleted($task);
+        $response = $this->patch('/tasks/trashed/' . $task->id);
+        $response->assertStatus(302);
+        $this->assertFalse($task->trashed());
+    }
+
+    public function test_user_can_force_delete_a_task()
+    {
+        $task = Task::factory()->create();
+        $this->actingAs($task->user);
+        $this->delete('/tasks/' . $task->id);
+        $this->assertSoftDeleted($task);
+        $response = $this->delete('/tasks/trashed/' . $task->id);
+        $response->assertStatus(302);
+        $this->assertDeleted($task);
     }
 }
